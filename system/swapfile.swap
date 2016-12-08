@@ -1,0 +1,8 @@
+[Unit]
+Description=Swap Space Contorl Service
+
+[Swap]
+What=/swapfile
+[Install]
+
+WantedBy=multi-user.target
