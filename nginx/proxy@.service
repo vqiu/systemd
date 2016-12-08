@@ -1,0 +1,19 @@
+Unit]
+Description=The Web Proxy Server for %I
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/opt/run/proxy_%i.pid
+ExecStartPre=/usr/bin/rm -f /opt/run/proxy_%i.pid
+ExecStartPre=/opt/nginx/nginx -t -c /opt/etc/nginx/stream/%i.conf
+ExecStart=/opt/nginx/nginx -c /opt/etc/nginx/vhosts/%i.conf
+ExecStartPost=/bin/sleep 1
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=process
+KillSignal=SIGQUIT
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
