@@ -1,0 +1,15 @@
+[Unit]
+Description=The Apache HTTP Server
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=fork
+ExecStart=${PREFIX}/apache24/bin/httpd -t
+ExecStart=${PREFIX}/apache24/bin/httpd -DFOREGROUND
+ExecReload=${PREFIX}/apache24/bin/httpd -k graceful
+ExecStop=/bin/kill -WINCH ${MAINPID}
+KillSignal=SIGCONT
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
