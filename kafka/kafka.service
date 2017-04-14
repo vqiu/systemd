@@ -8,6 +8,10 @@ After=network.target remote-fs.target
 Type=simple
 User=kafka
 Group=kafka
+Restart=on-failure
+SyslogIdentifiler=kafka
+EnvironmentFile=-/opt/wdf/env/environment
+WorkingDirectory=${kafka_log_dir}
 ExecStart=/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
 ExecStop=/opt/kafka/bin/zookeeper-server-stop.sh
 
