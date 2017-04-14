@@ -6,11 +6,15 @@ After=network.target remote-fs.target
 
 [Service]
 Type=forking
-User=zookeeper
-Group=zookeeper
-ExecStart=/opt/zookeeper/bin/zkServer.sh start
-ExecStop=/opt/zookeeper/bin/zkServer.sh stop
-ExecReload=/opt/zookeeper/bin/zkServer.sh restart
+SyslogIdentifier=zookeeper
+EnvironmentFile=-/opt/wdf/env/environment
+WorkingDirectory={{ zookeeper_data_dir }}
+User={{ owner }}
+Group={{ owner }}
+UMask=0027
+ExecStart={{ zookeeper_app_dir }}/zookeeper/bin/zkServer.sh start {{ zookeeper_etc_dir }}/zoo.cfg
+ExecStop={{ zookeeper_app_dir }}/zookeeper/bin/zkServer.sh stop {{ zookeeper_etc_dir }}/zoo.cfg
+ExecReload={{ zookeeper_app_dir }}/zookeeper/bin/zkServer.sh restart {{ zookeeper_etc_dir }}/zoo.cfg
 
 [Install]
 WantedBy=multi-user.target
