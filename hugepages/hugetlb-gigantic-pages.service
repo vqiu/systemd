@@ -1,0 +1,14 @@
+[Unit]
+Description=HugeTLB Gigantic Pages Reservation
+DefaultDependencies=no
+ConditionPathExists=/sys/devices/system/node 
+ConditionKernelCommandLine=hugepagesz=1G
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c "/usr/lib/systemd/hugetlb-reserve-pages start"
+ExecStop=/bin/bash -c "/usr/lib/systemd/hugetlb-reserve-pages stop"
+
+[Install]
+WantedBy=sysinit.target
