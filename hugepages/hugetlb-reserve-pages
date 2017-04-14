@@ -1,0 +1,40 @@
+#!/bin/bash
+# 文件名: hugetlb-reserve-pages
+# 功能: 分配内存巨页脚本
+# 描述: 巨页大小必须为偶数且不能高于物理内存
+
+nodes_path=/sys/devices/system/node/
+huge_sizes={{ hugepage_size }}
+mem_size=$(($(grep MemTotal /proc/meminfo | awk '{print $2}') / 1024000))
+
+reserve_pages()
+{
+    echo $1 > ${nodes_path}/$2/hugepages/hugepages-1048576kB/nr_hugepages
+}
+
+case $1 in
+    start)
+        if [ ! -d $nodes_path ]; then
+            echo "ERROR: $nodes_path does not exist"
+            exit 1
+        fi
+
+        if [ $((${huge_sizes} % 2)) != 0 ] || [ ${huge_sizes} -gt ${mem_size} ]; then
+            echo "ERROR: $huge_sizes is not void memory size."
+            exit 1
+        else
+            sig_node_size=$((${huge_sizes} / 2 ))
+        fi
+
+        reserve_pages ${sig_node_size} node0
+        reserve_pages ${sig_node_size} node1
+        ;;
+    stop)
+        reserve_pages 0 node0
+        reserve_pages 0 node1
+        ;;
+    *)
+        echo "Usage: `basename $0` start | stop."
+        exit 1
+        ;;
+esac
