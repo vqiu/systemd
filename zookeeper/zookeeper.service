@@ -7,14 +7,15 @@ After=network.target remote-fs.target
 [Service]
 Type=forking
 SyslogIdentifier=zookeeper
-EnvironmentFile=-/opt/wdf/env/environment
-WorkingDirectory={{ zookeeper_data_dir }}
-User={{ owner }}
-Group={{ owner }}
+Environment="JAVA_HOME=/opt/wd/app/jdk"
+WorkingDirectory=/data/dbs/zookeeper
+User=wd
+Group=wd
 UMask=0027
-ExecStart={{ zookeeper_app_dir }}/zookeeper/bin/zkServer.sh start {{ zookeeper_etc_dir }}/zoo.cfg
-ExecStop={{ zookeeper_app_dir }}/zookeeper/bin/zkServer.sh stop {{ zookeeper_etc_dir }}/zoo.cfg
-ExecReload={{ zookeeper_app_dir }}/zookeeper/bin/zkServer.sh restart {{ zookeeper_etc_dir }}/zoo.cfg
+ExecStart=/opt/wd/app/zookeeper/bin/zkServer.sh start /opt/wd/etc/zookeeper/zoo.cfg
+ExecStop=/opt/wd/app/zookeeper/bin/zkServer.sh stop /opt/wd/etc/zookeeper/zoo.cfg
+ExecReload=/opt/wd/app/zookeeper/bin/zkServer.sh restart /opt/wd/etc/zookeeper/zoo.cfg
+Restart=on-abort
 
 [Install]
 WantedBy=multi-user.target

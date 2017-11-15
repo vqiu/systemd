@@ -1,0 +1,31 @@
+[Unit]
+Description=The nginx HTTP and reverse proxy server as container
+Documentation=http://nginx.org/en/docs/
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/opt/wd/env/nginx.service.env
+Restart=on-failure
+TimeoutStartSec=120s
+RestartSec=2s
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+ExecStartPre=-/usr/bin/docker stop "%p"
+ExecStartPre=-/usr/bin/docker rm "%p"
+ExecStart=/usr/bin/docker run \
+                          --name "%p" \
+                          --rm \
+                          --network host \
+                          --ip ${NGINX_IP_ADDRESS} \
+                          --volume /etc/localtime:/etc/localtime:ro \
+                          --volume ${NGINX_HTML}:/usr/share/nginx/html:rw,z \
+                          --volume ${NGINX_LOGS}:/var/log/nginx:z \
+                          --volume ${NGINX_CONF}:/etc/nginx:ro,z \
+                          ${NGINX_DOCKER_IMAGE}
+ExecReload=/usr/bin/docker exec "%p" nginx -s reload
+ExecStop=/usr/bin/docker stop "%p"
+
+[Install]
+WantedBy=multi-user.target

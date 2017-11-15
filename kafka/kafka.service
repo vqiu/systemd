@@ -1,19 +1,20 @@
 [Unit]
-Description=Apache Zookeeper server (Kafka)
-Documentation=http://zookeeper.apache.org
-Requires=network.target remote-fs.target
-After=network.target remote-fs.target
+Description=Apache Kafka server (broker)
+Documentation=http://kafka.apache.org/documentation.html
+ConditionPathExists=/data/logs/kafka
+Before=zookeeper.service
+After=zookeeper.service
 
 [Service]
 Type=simple
-User=kafka
-Group=kafka
+Environment="JAVA_HOME=/opt/wds/app/jdk"
+User=wds
+Group=wds
+WorkingDirectory=/data/logs/kafka
+ExecStart=/opt/wds/app/kafka/bin/kafka-server-start.sh /opt/wds/etc/kafka/server.properties
+ExecStop=/opt/wds/app/kafka/bin/kafka-server-stop.sh
 Restart=on-failure
-SyslogIdentifiler=kafka
-EnvironmentFile=-/opt/wdf/env/environment
-WorkingDirectory=${kafka_log_dir}
-ExecStart=/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
-ExecStop=/opt/kafka/bin/zookeeper-server-stop.sh
+SyslogIdentifier=kafka
 
 [Install]
 WantedBy=multi-user.target
