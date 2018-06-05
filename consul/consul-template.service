@@ -1,0 +1,19 @@
+[Unit]
+Description=consul-template
+After=network-online.target
+
+[Service]
+Environment="SERVER_ADDR=127.0.0.1:8500"
+Environment="TEMPLATE_FILE=/etc/nginx/template/config.lua-template"
+Environment="OUTPUT_FILE=/etc/nginx/lua/waf/config.lua.new"
+Environment="EXEC_CMD=nginx -t && nginx -s reload"
+ExecStartPre=/usr/bin/touch ${OUTPUT_FILE}
+ExecStart=/usr/local/bin/consul-template -consul-addr ${SERVER_ADDR} \
+               -template ${TEMPLATE_FILE}:${OUTPUT_FILE}:${EXEC_CMD}
+
+Restart=on-failure
+KillSignal=SIGINT
+SyslogIdentifier=consul-template
+
+[Install]
+WantedBy=multi-user.target
